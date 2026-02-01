@@ -3,403 +3,298 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Be My Valentine?</title>
+  <title>Dress Up Date Game 💖</title>
   <style>
-    :root {
-      --bg1: #ffdde1;
-      --bg2: #ee9ca7;
-      --card: rgba(255,255,255,0.7);
-      --text: #2b2b2b;
-      --yes: #22c55e;
-      --no: #ef4444;
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+
+    body{
+      margin:0;min-height:100vh;display:grid;place-items:center;
+      background:linear-gradient(135deg,#ffdde1,#ee9ca7);
     }
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--text);
-      background: radial-gradient(circle at 20% 20%, #fff 0 10%, transparent 11%),
-                  radial-gradient(circle at 80% 30%, #fff 0 8%, transparent 9%),
-                  radial-gradient(circle at 40% 80%, #fff 0 7%, transparent 8%),
-                  linear-gradient(135deg, var(--bg1), var(--bg2));
-      overflow: hidden;
+    .card{
+      width:min(900px,95vw);
+      background:rgba(255,255,255,.9);
+      border-radius:20px;
+      box-shadow:0 20px 50px rgba(0,0,0,.2);
+      padding:20px;
     }
 
-    .card {
-      width: min(680px, calc(100vw - 32px));
-      padding: 28px;
-      border-radius: 24px;
-      background: var(--card);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.55);
-      position: relative;
+    h1{text-align:center;margin:5px 0 15px}
+
+    .screen{display:none}
+    .screen.active{display:block}
+
+    /* Character */
+    .game{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
     }
 
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(28px, 4vw, 44px);
-      letter-spacing: -0.02em;
-      text-align: center;
+    @media(max-width:700px){
+      .game{grid-template-columns:1fr}
     }
 
-    p {
-      margin: 0 0 18px;
-      text-align: center;
-      opacity: 0.85;
-      font-size: 16px;
+    .character-wrap{
+      display:grid;place-items:center;
+      background:#ffe4ec;
+      border-radius:16px;
+      padding:20px;
     }
 
-    .stage {
-      position: relative;
-      height: min(380px, 55vh);
-      border-radius: 20px;
-      background: rgba(255,255,255,0.55);
-      border: 1px dashed rgba(0,0,0,0.1);
-      overflow: hidden;
-      display: grid;
-      place-items: center;
-      margin-top: 18px;
+    .character{
+      position:relative;
+      width:180px;
+      height:300px;
+      background:#ffd1dc;
+      border-radius:90px 90px 40px 40px;
+      overflow:hidden;
+      box-shadow:inset 0 0 0 3px rgba(0,0,0,.1);
     }
 
-    .buttons {
-      position: relative;
-      width: 100%;
-      height: 100%;
+    /* Face */
+    .face{
+      position:absolute;top:40px;left:50%;transform:translateX(-50%);
+      width:120px;height:90px;border-radius:50%;background:#ffefef;
+    }
+    .eye{width:12px;height:12px;background:#333;border-radius:50%;position:absolute;top:30px}
+    .eye.left{left:35px}
+    .eye.right{right:35px}
+    .mouth{width:30px;height:14px;border-bottom:3px solid #444;border-radius:0 0 30px 30px;position:absolute;bottom:20px;left:50%;transform:translateX(-50%)}
+
+    /* Clothes layers */
+    .hair,.top,.bottom,.shoes{position:absolute;left:0;width:100%}
+
+    .hair{top:0;height:80px}
+    .top{top:110px;height:90px}
+    .bottom{top:190px;height:70px}
+    .shoes{bottom:0;height:40px}
+
+    /* Hair styles */
+    .hair.short{background:#6b4b3e}
+    .hair.long{background:linear-gradient(#3b2a20,#6b4b3e)}
+    .hair.curly{background:repeating-radial-gradient(circle at top,#5a3a2b 0 8px,#3b2418 9px 14px)}
+
+    /* Tops */
+    .top.tee{background:#60a5fa}
+    .top.hoodie{background:#22c55e}
+    .top.dress{background:linear-gradient(#fb7185,#f43f5e)}
+
+    /* Bottoms */
+    .bottom.jeans{background:#1e40af}
+    .bottom.skirt{background:#f472b6}
+    .bottom.shorts{background:#a855f7}
+
+    /* Shoes */
+    .shoes.sneakers{background:#444}
+    .shoes.boots{background:#78350f}
+    .shoes.heels{background:#111}
+
+    /* Options */
+    .options{
+      display:grid;
+      gap:16px;
     }
 
-    button {
-      appearance: none;
-      border: none;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: 700;
-      padding: 14px 22px;
-      border-radius: 999px;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.12);
-      transition: transform 120ms ease, filter 120ms ease;
-      user-select: none;
-      touch-action: manipulation;
+    .group{
+      background:#fff0f5;
+      padding:12px;
+      border-radius:12px;
     }
 
-    button:active { transform: scale(0.98); }
+    .group h3{margin:0 0 8px;font-size:16px}
 
-    #yesBtn {
-      background: linear-gradient(180deg, #34d399, var(--yes));
-      color: white;
-      position: absolute;
-      left: 50%;
-      top: 62%;
-      transform: translate(-120%, -50%);
+    .group button{
+      margin:4px;
+      padding:6px 10px;
+      border:none;border-radius:999px;
+      background:#fff;cursor:pointer;font-weight:600;
+      box-shadow:0 2px 6px rgba(0,0,0,.15);
     }
 
-    #noBtn {
-      background: linear-gradient(180deg, #fb7185, var(--no));
-      color: white;
-      position: absolute;
-      left: 50%;
-      top: 62%;
-      transform: translate(20%, -50%);
+    .group button.active{background:#fb7185;color:white}
+
+    .next{
+      margin-top:10px;
+      padding:12px 18px;
+      border:none;border-radius:999px;
+      background:#22c55e;color:white;font-size:16px;font-weight:700;
+      cursor:pointer;
+      width:100%;
     }
 
-    .hearts {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      opacity: 0.4;
-      filter: blur(0.2px);
+    /* Date screen */
+    .date{
+      text-align:center;
+      padding:20px;
     }
 
-    .heart {
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      transform: rotate(45deg);
-      background: #ff3b7a;
-      border-radius: 4px;
-      animation: floatUp linear infinite;
-      opacity: 0.8;
-    }
-    .heart::before,
-    .heart::after {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      background: #ff3b7a;
-      border-radius: 50%;
-    }
-    .heart::before { left: -8px; top: 0; }
-    .heart::after  { left: 0; top: -8px; }
-
-    @keyframes floatUp {
-      from { transform: translateY(20px) rotate(45deg); }
-      to   { transform: translateY(-420px) rotate(45deg); }
+    .scene{
+      margin:15px auto;
+      width:100%;max-width:500px;height:220px;
+      border-radius:16px;
+      background:linear-gradient(#60a5fa,#fde68a);
+      position:relative;overflow:hidden;
     }
 
-    .result {
-      display: none;
-      text-align: center;
-      padding: 18px 10px 6px;
+    .sun{width:60px;height:60px;background:#fde047;border-radius:50%;position:absolute;top:15px;right:20px}
+    .ground{position:absolute;bottom:0;left:0;width:100%;height:60px;background:#22c55e}
+
+    .date-char{
+      position:absolute;bottom:40px;left:50%;transform:translateX(-50%) scale(.7);
     }
 
-    .result.show { display: block; }
-
-    .result h2 {
-      margin: 10px 0 6px;
-      font-size: clamp(22px, 3vw, 30px);
-    }
-
-    .result .sub {
-      margin: 0;
-      opacity: 0.85;
-      font-weight: 600;
-    }
-
-    /* Confetti canvas covers page */
-    #confetti {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    .tiny {
-      margin-top: 10px;
-      font-size: 12px;
-      opacity: 0.6;
-      text-align: center;
+    .restart{
+      margin-top:15px;
+      padding:10px 16px;
+      border:none;border-radius:999px;
+      background:#3b82f6;color:white;font-weight:700;cursor:pointer;
     }
   </style>
 </head>
 <body>
-  <canvas id="confetti"></canvas>
 
-  <div class="card">
-    <h1>Will you be my Valentine? 💘</h1>
-    <p>Choose wisely…</p>
+<div class="card">
+  <h1>Dress Up & Go On a Date 💕</h1>
 
-    <div class="stage" id="stage">
-      <div class="hearts" id="hearts"></div>
-      <div class="buttons" id="buttons">
-        <button id="yesBtn">Yes 💚</button>
-        <button id="noBtn">No 💔</button>
+  <!-- Screen 1: Dress Up -->
+  <div class="screen active" id="dressScreen">
+    <div class="game">
+
+      <!-- Character -->
+      <div class="character-wrap">
+        <div class="character" id="character">
+
+          <div class="hair short" id="hair"></div>
+
+          <div class="face">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="mouth"></div>
+          </div>
+
+          <div class="top tee" id="top"></div>
+          <div class="bottom jeans" id="bottom"></div>
+          <div class="shoes sneakers" id="shoes"></div>
+        </div>
+      </div>
+
+      <!-- Options -->
+      <div class="options">
+
+        <div class="group">
+          <h3>Hair</h3>
+          <button data-type="hair" data-value="short" class="active">Short</button>
+          <button data-type="hair" data-value="long">Long</button>
+          <button data-type="hair" data-value="curly">Curly</button>
+        </div>
+
+        <div class="group">
+          <h3>Top</h3>
+          <button data-type="top" data-value="tee" class="active">T‑Shirt</button>
+          <button data-type="top" data-value="hoodie">Hoodie</button>
+          <button data-type="top" data-value="dress">Dress</button>
+        </div>
+
+        <div class="group">
+          <h3>Bottom</h3>
+          <button data-type="bottom" data-value="jeans" class="active">Jeans</button>
+          <button data-type="bottom" data-value="skirt">Skirt</button>
+          <button data-type="bottom" data-value="shorts">Shorts</button>
+        </div>
+
+        <div class="group">
+          <h3>Shoes</h3>
+          <button data-type="shoes" data-value="sneakers" class="active">Sneakers</button>
+          <button data-type="shoes" data-value="boots">Boots</button>
+          <button data-type="shoes" data-value="heels">Heels</button>
+        </div>
+
+        <button class="next" id="goDate">Go On Date 💖</button>
       </div>
     </div>
-
-    <div class="result" id="result">
-      <h2>YAYYYYY!!! 🥰🌹</h2>
-      <p class="sub">You just made my whole day.</p>
-    </div>
-
-    <div class="tiny">Tip: send the link to your person 😌</div>
   </div>
 
-  <script>
-    // --- Floating hearts background inside stage ---
-    const hearts = document.getElementById("hearts");
-    const stage = document.getElementById("stage");
+  <!-- Screen 2: Date -->
+  <div class="screen" id="dateScreen">
+    <div class="date">
+      <h2>Your Date Night ✨</h2>
+      <p>You look amazing 😍</p>
 
-    function spawnHeart() {
-      const h = document.createElement("div");
-      h.className = "heart";
-      const w = stage.clientWidth;
-      const x = Math.random() * (w - 20);
-      const dur = 3 + Math.random() * 4;
-      const delay = Math.random() * 1.5;
-      h.style.left = x + "px";
-      h.style.bottom = (-10 - Math.random() * 30) + "px";
-      h.style.animationDuration = dur + "s";
-      h.style.animationDelay = delay + "s";
-      h.style.opacity = (0.45 + Math.random() * 0.5).toFixed(2);
-      h.style.transform = `rotate(45deg) scale(${0.7 + Math.random() * 0.9})`;
-      hearts.appendChild(h);
+      <div class="scene">
+        <div class="sun"></div>
+        <div class="ground"></div>
+        <div class="date-char" id="dateChar"></div>
+      </div>
 
-      setTimeout(() => h.remove(), (dur + delay) * 1000 + 200);
-    }
+      <p id="rating"></p>
 
-    setInterval(spawnHeart, 220);
-    for (let i = 0; i < 12; i++) spawnHeart();
+      <button class="restart" id="restart">Dress Up Again 🔁</button>
+    </div>
+  </div>
+</div>
 
-    // --- No button runs away ---
-    const noBtn = document.getElementById("noBtn");
-    const yesBtn = document.getElementById("yesBtn");
-    const buttons = document.getElementById("buttons");
+<script>
+  const hair = document.getElementById("hair");
+  const top = document.getElementById("top");
+  const bottom = document.getElementById("bottom");
+  const shoes = document.getElementById("shoes");
 
-    // Place buttons nicely on load
-    function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+  const dressScreen = document.getElementById("dressScreen");
+  const dateScreen = document.getElementById("dateScreen");
+  const dateChar = document.getElementById("dateChar");
+  const rating = document.getElementById("rating");
 
-    function moveNoButtonAwayFrom(pointerX, pointerY) {
-      const rect = buttons.getBoundingClientRect();
-      const btnRect = noBtn.getBoundingClientRect();
+  let outfit = {
+    hair: "short",
+    top: "tee",
+    bottom: "jeans",
+    shoes: "sneakers"
+  };
 
-      // current center of NO
-      const bx = btnRect.left + btnRect.width / 2;
-      const by = btnRect.top + btnRect.height / 2;
+  // Handle buttons
+  document.querySelectorAll(".group button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const type = btn.dataset.type;
+      const value = btn.dataset.value;
 
-      // vector away from pointer
-      let dx = bx - pointerX;
-      let dy = by - pointerY;
-      const len = Math.hypot(dx, dy) || 1;
-      dx /= len; dy /= len;
+      outfit[type] = value;
 
-      // random wiggle so it feels playful
-      const wiggle = () => (Math.random() - 0.5) * 0.7;
-      dx += wiggle();
-      dy += wiggle();
+      // Update visuals
+      if(type === "hair") hair.className = "hair " + value;
+      if(type === "top") top.className = "top " + value;
+      if(type === "bottom") bottom.className = "bottom " + value;
+      if(type === "shoes") shoes.className = "shoes " + value;
 
-      // step distance scales with stage size
-      const step = 120;
-
-      // compute new position in BUTTONS coords
-      const currentLeft = btnRect.left - rect.left;
-      const currentTop  = btnRect.top  - rect.top;
-
-      let newLeft = currentLeft + dx * step;
-      let newTop  = currentTop  + dy * step;
-
-      // keep inside the stage with padding
-      const pad = 12;
-      newLeft = clamp(newLeft, pad, rect.width - btnRect.width - pad);
-      newTop  = clamp(newTop,  pad, rect.height - btnRect.height - pad);
-
-      noBtn.style.left = newLeft + "px";
-      noBtn.style.top  = newTop + "px";
-      noBtn.style.transform = "none";
-    }
-
-    // initialize absolute positioning (convert from % transform layout)
-    function absolutizeButtons() {
-      const rect = buttons.getBoundingClientRect();
-      [yesBtn, noBtn].forEach(btn => {
-        const r = btn.getBoundingClientRect();
-        btn.style.left = (r.left - rect.left) + "px";
-        btn.style.top  = (r.top  - rect.top) + "px";
-        btn.style.transform = "none";
-      });
-    }
-    window.addEventListener("load", absolutizeButtons);
-    window.addEventListener("resize", absolutizeButtons);
-
-    // proximity detection (mouse + touch)
-    function handlePointerMove(e) {
-      const p = e.touches ? e.touches[0] : e;
-      const x = p.clientX;
-      const y = p.clientY;
-
-      const btnRect = noBtn.getBoundingClientRect();
-      const bx = btnRect.left + btnRect.width / 2;
-      const by = btnRect.top + btnRect.height / 2;
-
-      const dist = Math.hypot(bx - x, by - y);
-
-      // If you're within range, it flees
-      const fleeRadius = 130;
-      if (dist < fleeRadius) moveNoButtonAwayFrom(x, y);
-    }
-
-    document.addEventListener("mousemove", handlePointerMove, { passive: true });
-    document.addEventListener("touchstart", handlePointerMove, { passive: true });
-    document.addEventListener("touchmove", handlePointerMove, { passive: true });
-
-    // Optional: block clicking NO (in case someone manages)
-    noBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // extra flee on click attempt
-      const r = noBtn.getBoundingClientRect();
-      moveNoButtonAwayFrom(r.left, r.top);
+      // Active button
+      btn.parentElement.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
     });
+  });
 
-    // --- Confetti (simple canvas confetti) ---
-    const confettiCanvas = document.getElementById("confetti");
-    const ctx = confettiCanvas.getContext("2d");
-    let W, H;
+  // Go to date
+  document.getElementById("goDate").addEventListener("click", () => {
+    dressScreen.classList.remove("active");
+    dateScreen.classList.add("active");
 
-    function resizeConfetti() {
-      W = confettiCanvas.width = window.innerWidth * devicePixelRatio;
-      H = confettiCanvas.height = window.innerHeight * devicePixelRatio;
-      confettiCanvas.style.width = window.innerWidth + "px";
-      confettiCanvas.style.height = window.innerHeight + "px";
-      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-    }
-    window.addEventListener("resize", resizeConfetti);
-    resizeConfetti();
+    // Clone character
+    const clone = document.getElementById("character").cloneNode(true);
+    clone.style.transform = "scale(.7)";
+    dateChar.innerHTML = "";
+    dateChar.appendChild(clone);
 
-    const COLORS = ["#ff3b7a", "#ffcc00", "#22c55e", "#3b82f6", "#a855f7", "#fb7185"];
-    let pieces = [];
-    let animId = null;
+    // Random rating
+    const score = Math.floor(8 + Math.random()*3);
+    rating.textContent = `Date Rating: ${score}/10 💘`;
+  });
 
-    function burstConfetti(count = 180) {
-      const originX = window.innerWidth / 2;
-      const originY = window.innerHeight * 0.35;
+  // Restart
+  document.getElementById("restart").addEventListener("click", () => {
+    dateScreen.classList.remove("active");
+    dressScreen.classList.add("active");
+  });
+</script>
 
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 3 + Math.random() * 7;
-        pieces.push({
-          x: originX,
-          y: originY,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed - 6,
-          g: 0.18 + Math.random() * 0.12,
-          size: 5 + Math.random() * 6,
-          rot: Math.random() * Math.PI,
-          vr: (Math.random() - 0.5) * 0.25,
-          color: COLORS[Math.floor(Math.random() * COLORS.length)],
-          life: 180 + Math.random() * 60
-        });
-      }
-
-      if (!animId) animateConfetti();
-    }
-
-    function animateConfetti() {
-      animId = requestAnimationFrame(animateConfetti);
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-      pieces = pieces.filter(p => p.life > 0);
-      for (const p of pieces) {
-        p.life -= 1;
-        p.vy += p.g;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.rot += p.vr;
-
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rot);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size * 0.7);
-        ctx.restore();
-      }
-
-      if (pieces.length === 0) {
-        cancelAnimationFrame(animId);
-        animId = null;
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      }
-    }
-
-    // --- Yes button behavior ---
-    const result = document.getElementById("result");
-
-    yesBtn.addEventListener("click", () => {
-      burstConfetti(240);
-      result.classList.add("show");
-
-      // Make it extra impossible to say no after yes 😌
-      noBtn.style.display = "none";
-      yesBtn.style.filter = "brightness(1.05)";
-      yesBtn.textContent = "YES!!! 💞";
-      yesBtn.disabled = true;
-      yesBtn.style.cursor = "default";
-    });
-  </script>
 </body>
 </html>
